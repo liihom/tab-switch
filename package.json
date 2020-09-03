@@ -1,0 +1,50 @@
+{
+  "name": "@autots/tab-switch",
+  "version": "0.0.1",
+  "description": "a tab switch lib",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "autots-scripts start",
+    "umd": "autots-scripts build",
+    "esm": "tsc --target ES5 --declaration --importHelpers",
+    "clean": "rimraf ./dist",
+    "build": "npm run clean && npm run umd && npm run esm",
+    "lint": "eslint ./src --fix --ext .ts"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "TypeScript",
+    "tab",
+    "tab switch"
+  ],
+  "types": "dist/tabswitch.d.ts",
+  "dependencies": {
+    "@babel/runtime": "^7.10.2",
+    "tslib": "^2.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.34.0",
+    "@typescript-eslint/parser": "^3.2.0",
+    "autots-scripts": "0.0.5",
+    "eslint": "^7.2.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^3.9.3"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "",
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "license": "MIT"
+}
