@@ -1,6 +1,6 @@
 {
   "name": "@autots/tab-switch",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "a tab switch lib",
   "main": "dist/main.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "tab",
     "tab switch"
   ],
-  "types": "dist/tabswitch.d.ts",
+  "types": "dist/index.d.ts",
   "dependencies": {
     "@babel/runtime": "^7.10.2",
     "tslib": "^2.0.0"
@@ -40,11 +40,11 @@
   "files": [
     "dist"
   ],
-  "author": "",
-  "homepage": "",
+  "author": "liihom",
+  "homepage": "https://github.com/liihom/tab-switch",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/liihom/tab-switch"
   },
   "license": "MIT"
 }

@@ -8,6 +8,8 @@ Commonly used tab switching function. Strictly observe the following DOM structu
 
 ## Installing
 
+[`@autots/tab-switch`](https://www.npmjs.com/package/@autots/tab-switch)
+
 Using npm:
 
 ```
