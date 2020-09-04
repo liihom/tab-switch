@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /**
  * tab switch
  * attention: [data-role="tabSwitch"] > [data-tab-scroll] > [data-role="tab"] > tabs
@@ -28,126 +29,98 @@ export default class TabSwitch {
     window.onload = this.init.bind(this);
   }
 
+  tabFilter(elem: HTMLElement): boolean {
+    return elem.classList && elem.classList.contains('item');
+  }
+
   init() {
     this.switchEls = document.querySelectorAll('[data-role="tabSwitch"]');
     if (this.switchEls && this.switchEls.length) {
-      this.initTabClickListener();
+      this.initSwitchListener();
     } else {
       console.warn('[TabSwitch warning]: cannot find the trigger element');
     }
   }
 
-  getSiblings(currentNode: Element): Array<Element> {
-    const siblings = []; // siblings nodes
-    const elseLi = currentNode.parentNode.children;
-    for (let i = 0, elseLil = elseLi.length; i < elseLil; i++) {
-      if (elseLi[i] !== currentNode) {
-        siblings.push(elseLi[i]);
-      }
-    }
-    return siblings;
+  initSwitchListener() {
+    this.switchEls && this.switchEls.forEach((elem) => {
+      elem.addEventListener('click', delegateFn(this.tabFilter, this.onTabClick.bind(this)));
+
+      const changeTabIndex = +(elem.dataset.tabActive) || 1;
+      const activeIndex = changeTabIndex - 1;
+      this.changeTab({
+        $switchEl: elem,
+        index: activeIndex,
+      });
+    });
   }
 
-  tabFilter(elem: HTMLElement): boolean {
-    return elem.classList && elem.classList.contains('item');
-  };
-
-  changeTab(param: {
-    activeIndex?: number;
-    $tab?: HTMLElement;
+  /**
+   * tab change
+   * @param {HTMLElement} $switchEl - the switch container of the current tab 
+   * @param {HTMLElement} [$tab] - current tab item
+   * @param {number} [index] - the active index of the tab（default [data-tab-active]）
+   */
+  changeTab({
+    $switchEl,
+    $tab,
+    index,
+  }: {
     $switchEl: HTMLElement;
+    $tab?: HTMLElement;
+    index?: number;
   }) {
-    const {
-      activeIndex,
-      $tab,
-      $switchEl,
-    } = param;
-
     if (!$switchEl) { return; }
 
-    const $tabsEl = $switchEl.querySelector(this.tabsClass);
+    const $tabsEl = $switchEl.querySelector(this.tabsClass); // the current tab container
+    const $tabsNodeList = $tabsEl.querySelectorAll(this.tabItemClass) as NodeListOf<HTMLElement>; // the nodelist of the current tab items
     let $activeTab: HTMLElement;
-
-    if (activeIndex && activeIndex < 0) {
-      return;
-    }
 
     if ($tab) {
       $activeTab = $tab;
     } else {
-      if (activeIndex && activeIndex < 0) {
-        return;
-      }
-      const $tabsNodeList = $tabsEl.querySelectorAll(this.tabItemClass);
-      $activeTab = <HTMLElement>$tabsNodeList[activeIndex];
+      const activeIndex = (index > 0) ? index : 0;
+      $activeTab = $tabsNodeList[activeIndex];
     }
 
-    const siblingsEl = this.getSiblings($activeTab);
-    const curIndex = [].indexOf.call($tabsEl, $activeTab);
-    $activeTab.classList.add('activate');
-    this.setTabPosition({
-      curIndex,
-      $switchTabItem: $activeTab,
-    });
+    if (!$activeTab) {
+      console.warn('[TabSwitch warning]: please check the config of the active tab is exist.');
+      return;
+    }
 
-    siblingsEl.forEach(elem => {
+    $tabsNodeList.forEach(elem => {
       elem.classList.remove('activate');
     });
+    $activeTab.classList.add('activate');
+
+    this.setTabPosition($activeTab);
   }
 
   /**
    * tab item click
   */
-  tabClickHandler(e: any) {
-    const button = e.delegateTarget;
+  onTabClick(e: Event) {
+    const button = e.target as HTMLElement;
     this.changeTab({
-      $tab: button,
       $switchEl: button.closest('[data-role="tabSwitch"]'),
-    });
-  };
-
-  /**
-   * 为标签父元素添加点击事件
-   */
-  initTabClickListener() {
-    this.switchEls && this.switchEls.forEach((elem) => {
-      const _self = this;
-      elem.addEventListener('click', delegateFn(_self.tabFilter, _self.tabClickHandler.bind(_self)));
-
-      const switchIndex = elem.dataset.tabActive;
-      const activeIndex = +switchIndex || 1;
-      const changeTabIndex = activeIndex - 1;
-      this.changeTab({
-        activeIndex: changeTabIndex,
-        $switchEl: elem,
-      });
+      $tab: button,
     });
   }
 
-  setTabPosition({
-    curIndex,
-    $switchTabItem,
-  }: {
-    curIndex: number,
-    $switchTabItem: HTMLElement,
-  }) {
-    const $tabScrollEl = <HTMLElement>$switchTabItem.closest(this.tabScrollClass);
-    const $tabsEl = $switchTabItem.parentElement;
-    const tabItemNum = $tabsEl.children.length;
-    const tabItemWidth = $switchTabItem.offsetWidth;
+  setTabPosition($tabItem: HTMLElement) {
+    const $tabScrollEl = $tabItem.closest(this.tabScrollClass) as HTMLElement;
+    const tabItemWidth = $tabItem.offsetWidth;
 
-    if (tabItemNum > curIndex) {
-      let scrollLeft = 0;
-      let tabScrollWidth = 0;
+    let scrollLeft = 0;
+    let tabScrollWidth = 0;
 
-      const tabOffsetLeft = $switchTabItem.offsetLeft;
-      tabScrollWidth = $tabScrollEl.offsetWidth;
-      scrollLeft = Math.ceil(tabOffsetLeft - tabScrollWidth / 2 + tabItemWidth / 2);
-      this.scrollFn($tabScrollEl, 'scrollLeft', scrollLeft, 300);
-    }
+    const tabOffsetLeft = $tabItem.offsetLeft;
+    tabScrollWidth = $tabScrollEl.offsetWidth;
+    scrollLeft = Math.ceil(tabOffsetLeft - tabScrollWidth / 2 + tabItemWidth / 2);
+    this.scrollFn($tabScrollEl, 'scrollLeft', scrollLeft, 300);
   }
 
-  scrollFn(element: any, direction: string, scrollTo: number, time: number) {
+  scrollFn(element: any, direction: string, scrollTo: number, time = 300) {
     const scrollFrom = parseInt(element[direction] + '', 10);
     let i = 0;
     const runEvery = 5;
