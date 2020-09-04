@@ -26,7 +26,9 @@ export default class TabSwitch {
     this.tabScrollClass = '[data-tab-scroll]';
     this.tabsClass =  '[data-role="tab"]';
     this.tabItemClass = '.item';
-    window.onload = this.init.bind(this);
+    this.switchEls = document.querySelectorAll('[data-role="tabSwitch"]');
+
+    this.init();
   }
 
   tabFilter(elem: HTMLElement): boolean {
@@ -34,7 +36,6 @@ export default class TabSwitch {
   }
 
   init() {
-    this.switchEls = document.querySelectorAll('[data-role="tabSwitch"]');
     if (this.switchEls && this.switchEls.length) {
       this.initSwitchListener();
     } else {
