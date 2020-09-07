@@ -1,19 +1,17 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /**
  * tab switch
- * attention: [data-role="tabSwitch"] > [data-tab-scroll] > [data-role="tab"] > tabs
+ * attention: [data-role="tabSwitch"] ~ [data-tab-scroll] > [data-role="tab"] > tabs
  */
 
-const delegateFn = function(elFilter: (elem: HTMLElement) => boolean, listener: any) {
-  return function (e: any) {
-    const el = e.target;
-    do {
-      if (!elFilter(el)) continue;
-      e.delegateTarget = el;
-      listener.apply(el, arguments);
-      return;
-    } while( (el == el.parentNode) );
-  };
+const delegateFn = function(elFilter: (elem: HTMLElement) => boolean, listener: any, e: any) {
+  const el = e.target;
+  do {
+    if (!elFilter(el)) continue;
+    e.delegateTarget = el;
+    listener(el);
+    return;
+  } while( (el == el.parentNode) );
 };
 
 export default class TabSwitch {
@@ -43,9 +41,23 @@ export default class TabSwitch {
     }
   }
 
+  destroy() {
+    if (this.switchEls && this.switchEls.length) {
+      this.switchEls.forEach((elem) => {
+        elem.removeEventListener('click', this._fnCheck);
+      });
+    } else {
+      console.warn('[TabSwitch warning]: cannot find the trigger element');
+    }
+  }
+
+  _fnCheck = (e: any) => {
+    delegateFn(this.tabFilter, this.onTabClick.bind(this), e);
+  }
+
   initSwitchListener() {
     this.switchEls && this.switchEls.forEach((elem) => {
-      elem.addEventListener('click', delegateFn(this.tabFilter, this.onTabClick.bind(this)));
+      elem.addEventListener('click', this._fnCheck);
 
       const changeTabIndex = +(elem.dataset.tabActive) || 1;
       const activeIndex = changeTabIndex - 1;
@@ -89,6 +101,10 @@ export default class TabSwitch {
       return;
     }
 
+    if ($activeTab.classList.contains('activate')) {
+      return;
+    }
+
     $tabsNodeList.forEach(elem => {
       elem.classList.remove('activate');
     });
@@ -100,12 +116,13 @@ export default class TabSwitch {
   /**
    * tab item click
   */
-  onTabClick(e: Event) {
-    const button = e.target as HTMLElement;
-    this.changeTab({
-      $switchEl: button.closest('[data-role="tabSwitch"]'),
-      $tab: button,
-    });
+  onTabClick(elem: HTMLElement) {
+    if (typeof elem === 'object') {
+      this.changeTab({
+        $switchEl: elem.closest('[data-role="tabSwitch"]'),
+        $tab: elem,
+      });
+    }
   }
 
   setTabPosition($tabItem: HTMLElement) {
