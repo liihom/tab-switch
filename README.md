@@ -70,8 +70,18 @@ new TabSwitch();
 <script src="dist/tab-switch.browser.min.js"></script>
 
 <script>
-  var demo = new AutoTs.TabSwitch();
+  var tabSwitch = new AutoTs.TabSwitch();
 </script>
+```
+
+## Methods
+
+`.destroy()`
+
+to clear dom event listener.
+
+``` js
+tabSwitch.destroy();
 ```
 
 ## Todo
