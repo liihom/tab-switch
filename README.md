@@ -34,9 +34,9 @@ $ yarn add @autots/tab-switch
 <div data-role="tabSwitch" data-tab-active="1">
   <div data-tab-scroll>
     <div data-role="tab">
-      <span class="athm-tab__item item">tab1</span>
-      <span class="athm-tab__item item">tab2</span>
-      <span class="athm-tab__item item">tab3</span>
+      <span class="demo-tab__item item">tab1</span>
+      <span class="demo-tab__item item">tab2</span>
+      <span class="demo-tab__item item">tab3</span>
     </div>
   </div>
 </div>

@@ -1,6 +1,6 @@
 {
   "name": "@autots/tab-switch",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "a tab switch lib",
   "main": "dist/main.js",
   "scripts": {
